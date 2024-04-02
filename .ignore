@@ -1,2 +1,6 @@
+!*
+.git
+.angular
+.vscode
 node_modules
 dist

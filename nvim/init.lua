@@ -191,8 +191,9 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Disable s key so that mini surround can use it
--- vim.api.nvim_set_keymap('n', 's', '<Nop>', { noremap = true, silent = true })
+-- Bind s to show surround which-key menu
+vim.keymap.set('n', 's', '<Cmd>lua require("which-key").show("s", {mode="n", auto=true})<CR>', { desc = 'Surround' })
+vim.keymap.set('x', 's', '<Cmd>lua require("which-key").show("s", {mode="v", auto=true})<CR>', { desc = 'Surround' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -294,6 +295,7 @@ require('lazy').setup {
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
 
@@ -306,10 +308,6 @@ require('lazy').setup {
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-      }
-
-      require('which-key').triggers = {
-        { 's', mode = 'n' },
       }
     end,
   },
@@ -816,7 +814,12 @@ require('lazy').setup {
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        mappings = {
+          suffix_last = '',
+          suffix_next = '',
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,

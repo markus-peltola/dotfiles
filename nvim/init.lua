@@ -116,8 +116,8 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
---  vim.opt.clipboard = 'unnamedplus'
-vim.keymap.set('v', '<leader>y', ":'<,'>w !clip.exe<CR><CR>", { desc = '[Y]ank to Win clipboard' })
+vim.opt.clipboard = 'unnamedplus'
+-- vim.keymap.set('v', '<leader>y', ":'<,'>w !clip.exe<CR><CR>", { desc = '[Y]ank to Win clipboard' })
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -165,8 +165,11 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+vim.keymap.set('n', '<leader>E', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+-- Buffer keymaps
+vim.keymap.set('n', '<leader>bd', '<cmd>bd<CR>', { desc = 'Close current buffer' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -302,6 +305,7 @@ require('lazy').setup {
       -- Document existing key chains
       require('which-key').add {
         { '<leader>c', group = '[C]ode' },
+        { '<leader>b', group = '[B]uffer' },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -629,6 +633,8 @@ require('lazy').setup {
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        ensure_installed = { 'lua_ls' },
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -776,7 +782,7 @@ require('lazy').setup {
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = true } },
 
   {
     'nvim-neo-tree/neo-tree.nvim',
@@ -795,7 +801,7 @@ require('lazy').setup {
         },
       },
     },
-    vim.keymap.set('n', '<leader>f', ':Neotree<CR>', { desc = '[F]ile tree' }),
+    vim.keymap.set('n', '<leader>e', ':Neotree<CR>', { desc = 'File [E]xplorer' }),
   },
 
   { -- Collection of various small independent plugins/modules

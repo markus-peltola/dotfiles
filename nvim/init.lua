@@ -870,6 +870,90 @@ require('lazy').setup {
     end,
   },
 
+  { 'nvim-treesitter/nvim-treesitter-context', after = 'nvim-treesitter' },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    after = 'nvim-treesitter',
+    config = function()
+      ---@diagnostic disable-next-line: missing-fields
+      require('nvim-treesitter.configs').setup {
+        highlight = { enable = true },
+        indent = { enable = true },
+        incremental_selection = { enable = true },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ['af'] = '@function.outer',
+              ['if'] = '@function.inner',
+              ['ac'] = '@class.outer',
+              ['ic'] = '@class.inner',
+              ['ai'] = '@conditional.outer',
+              ['ii'] = '@conditional.inner',
+              ['al'] = '@loop.outer',
+              ['il'] = '@loop.inner',
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_next_start = {
+              [']m'] = '@function.outer',
+              [']f'] = '@function.outer',
+              [']c'] = '@class.outer',
+              [']i'] = '@conditional.outer',
+              [']l'] = '@loop.outer',
+            },
+            goto_previous_start = {
+              ['[m'] = '@function.outer',
+              ['[f'] = '@function.outer',
+              ['[c'] = '@class.outer',
+              ['[i'] = '@conditional.outer',
+              ['[l'] = '@loop.outer',
+            },
+          },
+        },
+      }
+    end,
+  },
+
+  { -- Add a statusline to the bottom of the window
+    'hoob3rt/lualine.nvim',
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = 'gruvbox',
+          section_separators = { '', '' },
+          component_separators = { '', '' },
+        },
+        sections = {
+          lualine_a = { 'mode' },
+          lualine_b = { 'branch', 'diff', 'diagnostics' },
+          lualine_c = { { 'filename', path = 1 } },
+          lualine_x = { 'encoding', 'fileformat', 'filetype' },
+          lualine_y = { 'progress' },
+          lualine_z = { 'location' },
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { 'filename' },
+          lualine_x = { 'location' },
+          lualine_y = {},
+          lualine_z = {},
+        },
+      }
+    end,
+  },
+
+  { -- Add a statusline to the bottom of the window
+    'kyazdani42/nvim-web-devicons',
+    config = function()
+      require('nvim-web-devicons').setup { default = true }
+    end,
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- put them in the right spots if you want.

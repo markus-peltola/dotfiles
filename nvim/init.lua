@@ -101,6 +101,9 @@ vim.opt.softtabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
+-- Show vertical line at 140 characters
+vim.opt.colorcolumn = '140'
+
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, for help with jumping.
@@ -379,6 +382,13 @@ require('lazy').setup {
           -- mappings = {
           --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           -- },
+          layout_config = {
+            horizontal = {
+              preview_width = 0.5,
+              results_width = 0.5,
+            },
+            width = 0.95,
+          },
         },
         pickers = {
           find_files = {
@@ -635,6 +645,7 @@ require('lazy').setup {
       require('mason-lspconfig').setup {
         ensure_installed = { 'lua_ls' },
         automatic_installation = true,
+        automatic_enable = false,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -830,16 +841,16 @@ require('lazy').setup {
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      statusline.setup()
+      -- local statusline = require 'mini.statusline'
+      -- statusline.setup()
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- ---@diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -854,7 +865,7 @@ require('lazy').setup {
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
+        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc', 'javascript', 'typescript', 'json', 'css', 'yaml', 'xml' },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = { enable = true },
@@ -869,6 +880,9 @@ require('lazy').setup {
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+
+  -- vim.treesitter.language.register('html', 'html'),
+  -- vim.treesitter.language.register('njk', 'html'),
 
   { 'nvim-treesitter/nvim-treesitter-context', after = 'nvim-treesitter' },
   {
@@ -885,32 +899,30 @@ require('lazy').setup {
             enable = true,
             lookahead = true,
             keymaps = {
-              ['af'] = '@function.outer',
-              ['if'] = '@function.inner',
-              ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner',
-              ['ai'] = '@conditional.outer',
-              ['ii'] = '@conditional.inner',
-              ['al'] = '@loop.outer',
-              ['il'] = '@loop.inner',
+              ['af'] = { query = '@function.outer', desc = 'Outer function' },
+              ['if'] = { query = '@function.inner', desc = 'Inner function' },
+              ['ac'] = { query = '@class.outer', desc = 'Outer class' },
+              ['ic'] = { query = '@class.inner', desc = 'Inner class' },
+              ['al'] = { query = '@loop.outer', desc = 'Outer loop' },
+              ['il'] = { query = '@loop.inner', desc = 'Inner loop' },
+              ['ai'] = { query = '@conditional.outer', desc = 'Outer conditional' },
+              ['ii'] = { query = '@conditional.inner', desc = 'Inner conditional' },
             },
           },
           move = {
             enable = true,
             set_jumps = true,
             goto_next_start = {
-              [']m'] = '@function.outer',
-              [']f'] = '@function.outer',
-              [']c'] = '@class.outer',
-              [']i'] = '@conditional.outer',
-              [']l'] = '@loop.outer',
+              [']f'] = { query = '@function.outer', desc = 'Next function' },
+              [']c'] = { query = '@class.outer', desc = 'Next class' },
+              [']i'] = { query = '@conditional.outer', desc = 'Next conditional' },
+              [']l'] = { query = '@loop.outer', desc = 'Next loop' },
             },
             goto_previous_start = {
-              ['[m'] = '@function.outer',
-              ['[f'] = '@function.outer',
-              ['[c'] = '@class.outer',
-              ['[i'] = '@conditional.outer',
-              ['[l'] = '@loop.outer',
+              ['[f'] = { query = '@function.outer', desc = 'Previous function' },
+              ['[c'] = { query = '@class.outer', desc = 'Previous class' },
+              ['[i'] = { query = '@conditional.outer', desc = 'Previous conditional' },
+              ['[l'] = { query = '@loop.outer', desc = 'Previous loop' },
             },
           },
         },
@@ -953,6 +965,45 @@ require('lazy').setup {
       require('nvim-web-devicons').setup { default = true }
     end,
   },
+
+  {
+    'f-person/git-blame.nvim',
+    -- load the plugin at startup
+    event = 'VeryLazy',
+    -- Because of the keys part, you will be lazy loading this plugin.
+    -- The plugin wil only load once one of the keys is used.
+    -- If you want to load the plugin at startup, add something like event = "VeryLazy",
+    -- or lazy = false. One of both options will work.
+    opts = {
+      -- your configuration comes here
+      -- for example
+      enabled = false, -- if you want to enable the plugin
+      message_template = ' <author> • <date> • <summary>', -- template for the blame message, check the Message template section for more options
+      date_format = '%r', -- template for the date, check Date format section for more options
+      virtual_text_column = 1, -- virtual text start column, check Start virtual text at column section for more options
+    },
+
+    vim.keymap.set('n', '<leader>cb', ':GitBlameToggle<CR>', { desc = 'Toggle Git [B]lame' }),
+    vim.keymap.set('n', '<leader>cc', ':GitBlameCopyCommitURL<CR>', { desc = '[C]opy commit URL' }),
+  },
+
+  -- {
+  --   'glench/vim-jinja2-syntax', -- handles jinja/nunjucks syntax
+  --   ft = { 'njk', 'jinja' },
+  -- },
+
+  -- vim.filetype.add {
+  --   extension = {
+  --     njk = 'jinja',
+  --   },
+  -- },
+  --
+  -- vim.api.nvim_create_autocmd('FileType', {
+  --   pattern = 'jinja',
+  --   callback = function()
+  --     vim.cmd 'setlocal syntax=jinja'
+  --   end,
+  -- }),
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
